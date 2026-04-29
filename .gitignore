@@ -11,3 +11,6 @@ dist
 *.swo
 build
 .eslintcache
+*.db
+*.db-shm
+*.db-wal
