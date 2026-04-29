@@ -6,16 +6,21 @@ import Modal from '../../components/common/Modal'
 import { Table } from '../../components/common/Table'
 import Badge from '../../components/common/Badge'
 import { TextInput, Select } from '../../components/common/FormFields'
+import { useAuthStore } from '../../context/authStore'
 import { trucksAPI } from '../../api/services'
 import { truckStatusConfig } from '../../utils/helpers'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import toast from 'react-hot-toast'
 
 export default function TruckManagementPage() {
+  const { user } = useAuthStore()
   const [trucks, setTrucks] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTruck, setSelectedTruck] = useState(null)
+  const isAdmin = user?.role === 'admin'
+  const isOperator = user?.role === 'operator'
+  const canEdit = isAdmin || isOperator
   const [formData, setFormData] = useState({
     plateNumber: '',
     model: '',
@@ -128,18 +133,24 @@ export default function TruckManagementPage() {
       label: 'Actions',
       render: (row) => (
         <div className="flex items-center space-x-2">
-          <button
-            onClick={() => handleOpenModal(row)}
-            className="p-1 hover:bg-blue-100 rounded text-blue-600"
-          >
-            <Edit2 size={18} />
-          </button>
-          <button
-            onClick={() => handleDelete(row.id)}
-            className="p-1 hover:bg-red-100 rounded text-red-600"
-          >
-            <Trash2 size={18} />
-          </button>
+          {canEdit && (
+            <>
+              <button
+                onClick={() => handleOpenModal(row)}
+                className="p-1 hover:bg-blue-100 rounded text-blue-600"
+              >
+                <Edit2 size={18} />
+              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => handleDelete(row.id)}
+                  className="p-1 hover:bg-red-100 rounded text-red-600"
+                >
+                  <Trash2 size={18} />
+                </button>
+              )}
+            </>
+          )}
         </div>
       ),
     },
@@ -153,10 +164,12 @@ export default function TruckManagementPage() {
           <h1 className="text-3xl font-bold text-gray-900">Truck Management</h1>
           <p className="text-gray-600">Manage all trucks in your fleet</p>
         </div>
-        <Button onClick={() => handleOpenModal()} icon={Plus}>
-          <Plus className="inline mr-2" size={20} />
-          Add Truck
-        </Button>
+        {canEdit && (
+          <Button onClick={() => handleOpenModal()} icon={Plus}>
+            <Plus className="inline mr-2" size={20} />
+            Add Truck
+          </Button>
+        )}
       </div>
 
       {/* Table */}

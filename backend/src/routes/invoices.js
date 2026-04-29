@@ -11,13 +11,13 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticate);
 
-// Get all invoices
-router.get('/', getInvoices);
+// Get all invoices (Admin/Operator only)
+router.get('/', authorize('admin', 'operator'), getInvoices);
 
-// Get invoice by ID
-router.get('/:id', getInvoiceById);
+// Get invoice by ID (Admin/Operator only)
+router.get('/:id', authorize('admin', 'operator'), getInvoiceById);
 
-// Get invoice by job ID
-router.get('/job/:jobId', getInvoiceByJobId);
+// Get invoices for a job (Admin/Operator only)
+router.get('/job/:jobId', authorize('admin', 'operator'), getInvoicesByJobId);
 
 module.exports = router;

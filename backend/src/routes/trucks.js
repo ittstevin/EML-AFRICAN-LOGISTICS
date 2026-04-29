@@ -21,12 +21,12 @@ router.get('/', getTrucks);
 router.get('/:id', getTruckById);
 
 // Create truck (Admin/Operator only)
-router.post('/', authorize('Admin', 'Operator'), validate(createTruckSchema), createTruck);
+router.post('/', authorize('admin', 'operator'), validate(createTruckSchema), createTruck);
 
 // Update truck (Admin/Operator only)
-router.put('/:id', authorize('Admin', 'Operator'), validate(updateTruckSchema), updateTruck);
+router.put('/:id', authorize('admin', 'operator'), validate(updateTruckSchema), updateTruck);
 
 // Delete truck (Admin only)
-router.delete('/:id', authorize('Admin'), deleteTruck);
+router.delete('/:id', authorize('admin'), deleteTruck);
 
 module.exports = router;

@@ -5,7 +5,7 @@ const {
   createPayment,
   createBulkPayment
 } = require('../controllers/paymentController');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
 const { validate, createPaymentSchema } = require('../utils/validation');
 
 const router = express.Router();
@@ -13,16 +13,16 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticate);
 
-// Get all payments
-router.get('/', getPayments);
+// Get all payments (Admin/Operator only)
+router.get('/', authorize('admin', 'operator'), getPayments);
 
-// Get payment by ID
-router.get('/:id', getPaymentById);
+// Get payment by ID (Admin/Operator only)
+router.get('/:id', authorize('admin', 'operator'), getPaymentById);
 
-// Create single payment
-router.post('/', validate(createPaymentSchema), createPayment);
+// Create single payment (Admin/Operator only)
+router.post('/', authorize('admin', 'operator'), validate(createPaymentSchema), createPayment);
 
-// Create bulk payment
-router.post('/bulk', createBulkPayment);
+// Create bulk payment (Admin only)
+router.post('/bulk', authorize('admin'), createBulkPayment);
 
 module.exports = router;

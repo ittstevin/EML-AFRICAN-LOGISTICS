@@ -6,17 +6,22 @@ import Modal from '../../components/common/Modal'
 import { Table } from '../../components/common/Table'
 import Badge from '../../components/common/Badge'
 import { TextInput, Select, Textarea } from '../../components/common/FormFields'
+import { useAuthStore } from '../../context/authStore'
 import { jobsAPI, trucksAPI } from '../../api/services'
 import { jobStatusConfig, formatCurrency, calculateJobCost } from '../../utils/helpers'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import toast from 'react-hot-toast'
 
 export default function JobManagementPage() {
+  const { user } = useAuthStore()
   const [jobs, setJobs] = useState([])
   const [trucks, setTrucks] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedJob, setSelectedJob] = useState(null)
+  const isAdmin = user?.role === 'admin'
+  const isOperator = user?.role === 'operator'
+  const canEdit = isAdmin || isOperator
   const [formData, setFormData] = useState({
     goodsType: 'general',
     weight: '',
@@ -186,9 +191,11 @@ export default function JobManagementPage() {
           <button onClick={() => handleOpenModal(row)} className="p-1 hover:bg-blue-100 rounded text-blue-600">
             <Eye size={18} />
           </button>
-          <button onClick={() => handleDelete(row.id)} className="p-1 hover:bg-red-100 rounded text-red-600">
-            <Trash2 size={18} />
-          </button>
+          {canEdit && (
+            <button onClick={() => handleDelete(row.id)} className="p-1 hover:bg-red-100 rounded text-red-600">
+              <Trash2 size={18} />
+            </button>
+          )}
         </div>
       ),
     },
@@ -204,10 +211,12 @@ export default function JobManagementPage() {
           <h1 className="text-3xl font-bold text-gray-900">Job Management</h1>
           <p className="text-gray-600">Create and manage shipping jobs</p>
         </div>
-        <Button onClick={() => handleOpenModal()}>
-          <Plus className="inline mr-2" size={20} />
-          Create Job
-        </Button>
+        {canEdit && (
+          <Button onClick={() => handleOpenModal()}>
+            <Plus className="inline mr-2" size={20} />
+            Create Job
+          </Button>
+        )}
       </div>
 
       {/* Table */}

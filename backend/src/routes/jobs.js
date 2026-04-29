@@ -23,22 +23,22 @@ router.get('/', getJobs);
 // Get job by ID
 router.get('/:id', getJobById);
 
-// Create job
-router.post('/', validate(createJobSchema), createJob);
+// Create job (Operator/Admin only)
+router.post('/', authorize('admin', 'operator'), validate(createJobSchema), createJob);
 
-// Update job
-router.put('/:id', validate(updateJobSchema), updateJob);
+// Update job (Operator/Admin only)
+router.put('/:id', authorize('admin', 'operator'), validate(updateJobSchema), updateJob);
 
 // Approve job (Admin/Operator only)
-router.patch('/:id/approve', authorize('Admin', 'Operator'), approveJob);
+router.patch('/:id/approve', authorize('admin', 'operator'), approveJob);
 
-// Load job
-router.patch('/:id/load', loadJob);
+// Load job (Operator/Admin only)
+router.patch('/:id/load', authorize('admin', 'operator'), loadJob);
 
-// Confirm delivery
-router.patch('/:id/deliver', confirmDelivery);
+// Confirm delivery (Driver only)
+router.patch('/:id/deliver', authorize('admin', 'operator', 'driver'), confirmDelivery);
 
-// Complete job
-router.patch('/:id/complete', completeJob);
+// Complete job (Admin/Operator only)
+router.patch('/:id/complete', authorize('admin', 'operator'), completeJob);
 
 module.exports = router;
