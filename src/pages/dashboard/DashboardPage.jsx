@@ -1,25 +1,61 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DollarSign, Truck, Package, Clock } from 'lucide-react'
 import SummaryCard from '../../components/dashboard/SummaryCard'
 import Card, { CardHeader, CardBody } from '../../components/common/Card'
+import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { formatCurrency } from '../../utils/helpers'
+import { dashboardAPI } from '../../api/services'
+import toast from 'react-hot-toast'
 
 export default function DashboardPage() {
-  const [summary] = useState({
-    totalRevenue: 45230,
-    activeJobs: 12,
-    completedJobs: 145,
-    pendingPayments: 8900,
-    availableTrucks: 8,
-    inTransit: 4,
-    pendingJobs: 5,
-    avgDeliveryTime: '2.5 hrs',
-    revenueChange: 12.5,
-    jobsChange: 8.3,
-    completedChange: 5.2,
-    paymentsChange: -3.1,
-    recentActivity: [],
-  })
+  const [summary, setSummary] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      setIsLoading(true)
+      const response = await dashboardAPI.getSummary()
+      setSummary(response.data?.data || {
+        totalRevenue: 0,
+        activeJobs: 0,
+        completedJobs: 0,
+        pendingPayments: 0,
+        availableTrucks: 0,
+        inTransit: 0,
+        pendingJobs: 0,
+        avgDeliveryTime: '-',
+        revenueChange: 0,
+        jobsChange: 0,
+        completedChange: 0,
+        paymentsChange: 0,
+      })
+    } catch (err) {
+      // If dashboard endpoint doesn't exist, show empty state
+      setSummary({
+        totalRevenue: 0,
+        activeJobs: 0,
+        completedJobs: 0,
+        pendingPayments: 0,
+        availableTrucks: 0,
+        inTransit: 0,
+        pendingJobs: 0,
+        avgDeliveryTime: '-',
+        revenueChange: 0,
+        jobsChange: 0,
+        completedChange: 0,
+        paymentsChange: 0,
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isLoading) return <LoadingSpinner />
+  if (!summary) return <div>Failed to load dashboard</div>
 
   return (
     <div className="space-y-6">

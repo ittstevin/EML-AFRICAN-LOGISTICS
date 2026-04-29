@@ -4,7 +4,7 @@ const {
   getInvoiceById,
   getInvoiceByJobId
 } = require('../controllers/invoiceController');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -18,6 +18,6 @@ router.get('/', authorize('admin', 'operator'), getInvoices);
 router.get('/:id', authorize('admin', 'operator'), getInvoiceById);
 
 // Get invoices for a job (Admin/Operator only)
-router.get('/job/:jobId', authorize('admin', 'operator'), getInvoicesByJobId);
+router.get('/job/:jobId', authorize('admin', 'operator'), getInvoiceByJobId);
 
 module.exports = router;

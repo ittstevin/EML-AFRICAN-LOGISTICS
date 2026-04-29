@@ -49,23 +49,23 @@ export const approvalAPI = {
   completeJob: (jobId) => apiClient.patch(`/jobs/${jobId}/complete`),
 }
 
-// Dashboard API (mock data only)
+// Dashboard API
 export const dashboardAPI = {
-  getSummary: () => Promise.resolve({ data: { success: true, data: {} } }),
-  getRecentActivity: () => Promise.resolve({ data: { success: true, data: [] } }),
+  getSummary: () => apiClient.get('/dashboard/summary'),
+  getRecentActivity: () => apiClient.get('/dashboard/activity'),
 }
 
-// Notifications API (mock data only)
+// Notifications API
 export const notificationsAPI = {
-  getAll: () => Promise.resolve({ data: { success: true, data: [] } }),
-  getUnread: () => Promise.resolve({ data: { success: true, data: [] } }),
-  markAsRead: (id) => Promise.resolve({ data: { success: true } }),
-  markAllAsRead: () => Promise.resolve({ data: { success: true } }),
-  delete: (id) => Promise.resolve({ data: { success: true } }),
+  getAll: () => apiClient.get('/notifications'),
+  getUnread: () => apiClient.get('/notifications?status=unread'),
+  markAsRead: (id) => apiClient.patch(`/notifications/${id}/read`),
+  markAllAsRead: () => apiClient.patch('/notifications/read-all'),
+  delete: (id) => apiClient.delete(`/notifications/${id}`),
 }
 
 // User API
 export const userAPI = {
   getProfile: () => apiClient.get('/auth/profile'),
-  changePassword: (data) => Promise.resolve({ data: { success: true } }),
+  changePassword: (data) => apiClient.post('/auth/change-password', data),
 }
